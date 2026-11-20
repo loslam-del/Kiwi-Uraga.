@@ -91,7 +91,7 @@ public class MainActivity extends Activity {
             if (!(decoded instanceof String)) throw new Exception("Не удалось прочитать ответ страницы");
             org.json.JSONObject data = new org.json.JSONObject((String)decoded);
             String title=data.optString("title","Без названия");
-            String url=data.optString("url,"");
+            String url=data.optString("url","");
             String body=data.optString("text","");
             body=body.replaceAll("[\\t\\x0B\\f\\r]+"," ").replaceAll(" {2,}"," ").trim();
             if (body.length()>500000) body=body.substring(0,500000);
