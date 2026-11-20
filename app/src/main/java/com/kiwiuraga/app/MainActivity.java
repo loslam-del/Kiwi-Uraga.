@@ -35,8 +35,8 @@ public class MainActivity extends Activity {
 
     int dp(int n){return (int)(n*getResources().getDisplayMetrics().density+.5f);}
     TextView label(String s,int size,int color){TextView t=new TextView(this);t.setText(s);t.setTextSize(size);t.setTextColor(color);return t;}
-    Button btn(String s){Button b=new Button(this);b.setText(s);return b;}
-    EditText field(String hint,String value){EditText e=new EditText(this);e.setSingleLine(true);e.setHint(hint);e.setText(value);e.setTextColor(white);e.setHintTextColor(0xff888493);return e;}
+    Button btn(String s){Button b=new Button(this);b.setText(s);b.setAllCaps(false);b.setTextColor(white);b.setBackgroundTintList(android.content.res.ColorStateList.valueOf(0xff7043b8));return b;}
+    EditText field(String hint,String value){EditText e=new EditText(this);e.setSingleLine(true);e.setHint(hint);e.setText(value);e.setTextColor(white);e.setHintTextColor(0xff888493);e.setBackgroundTintList(android.content.res.ColorStateList.valueOf(accent));return e;}
     void gap(LinearLayout box,int h){View v=new View(this);box.addView(v,new LinearLayout.LayoutParams(1,dp(h)));}
     ImageView mascotView(int size){
         ImageView iv=new ImageView(this);
@@ -94,7 +94,7 @@ public class MainActivity extends Activity {
         chatBox=new LinearLayout(this);chatBox.setOrientation(1);content.addView(chatBox);
         String history=prefs.getString("history","");
         if(!history.isEmpty())for(String line:history.split("\\n\\n"))addMessage(line,false);
-        chatInput=new EditText(this);chatInput.setHint("Напиши сообщение…");chatInput.setTextColor(white);chatInput.setHintTextColor(0xff888493);content.addView(chatInput);
+        chatInput=new EditText(this);chatInput.setHint("Напиши сообщение…");chatInput.setTextColor(white);chatInput.setHintTextColor(0xff888493);chatInput.setBackgroundTintList(android.content.res.ColorStateList.valueOf(accent));content.addView(chatInput);
         Button send=btn("Отправить");content.addView(send);send.setOnClickListener(v->sendChat());
         Button clear=btn("Очистить историю");content.addView(clear);clear.setOnClickListener(v->{prefs.edit().remove("history").apply();chatBox.removeAllViews();});
     }
@@ -128,7 +128,7 @@ public class MainActivity extends Activity {
     void showImages(){
         heading("Генератор изображений");
         content.addView(label("Генерация через подключённый Images API. Укажи модель и ключ в настройках.",12,muted));
-        promptInput=new EditText(this);promptInput.setHint("Опиши изображение…");promptInput.setTextColor(white);promptInput.setHintTextColor(0xff888493);promptInput.setMinLines(3);promptInput.setGravity(Gravity.TOP);content.addView(promptInput);
+        promptInput=new EditText(this);promptInput.setHint("Опиши изображение…");promptInput.setTextColor(white);promptInput.setHintTextColor(0xff888493);promptInput.setBackgroundTintList(android.content.res.ColorStateList.valueOf(accent));promptInput.setMinLines(3);promptInput.setGravity(Gravity.TOP);content.addView(promptInput);
         Button gen=btn("Сгенерировать");content.addView(gen);gen.setOnClickListener(v->generateImage());
         imageStatus=label("Ожидаю запрос.",12,accent);content.addView(imageStatus);
         imagePreview=label("Здесь появится результат.",12,muted);content.addView(imagePreview);
