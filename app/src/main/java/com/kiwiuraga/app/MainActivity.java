@@ -32,6 +32,7 @@ public class MainActivity extends Activity {
     private android.graphics.Bitmap lastImage, mascot;
     private SharedPreferences prefs;
     private String selectedModel="";
+    private boolean localGanMode=false;
     private int bg=0xff0b0812, panel=0xff1b1427, white=0xfffff7ff, muted=0xffb9a9c9, accent=0xffff8de1, soft=0xff30213f;
 
     int dp(int n){return (int)(n*getResources().getDisplayMetrics().density+.5f);}
@@ -132,7 +133,10 @@ public class MainActivity extends Activity {
     }
     void showImages(){
         heading("Генератор изображений");
+        localGanMode=prefs.getBoolean("local_gan_mode",false);
         TextView intro=label("Превращай идеи в изображения вместе с Киви.",13,muted);intro.setPadding(dp(3),0,dp(3),dp(12));content.addView(intro);
+        Button mode=btn(localGanMode?"Режим: локальная Kiwi GAN":"Режим: облачная генерация");content.addView(mode);mode.setOnClickListener(v->{localGanMode=!localGanMode;prefs.edit().putBoolean("local_gan_mode",localGanMode).apply();show("images");});
+        TextView modeInfo=label(localGanMode?"Локальная GAN работает через Termux. Сейчас она создаёт случайные изображения 32×32; текстовое описание пока не влияет на результат.":"Облачная генерация использует API-ключ и выбранную модель.",11,muted);modeInfo.setPadding(dp(3),dp(5),dp(3),dp(10));content.addView(modeInfo);
         promptInput=new EditText(this);promptInput.setHint("Опиши изображение…");promptInput.setTextColor(white);promptInput.setHintTextColor(0xff888493);promptInput.setBackground(shape(0xff261c35,16));promptInput.setPadding(dp(14),dp(10),dp(14),dp(10));promptInput.setMinLines(3);promptInput.setGravity(Gravity.TOP);content.addView(promptInput);
         Button gen=btn("Сгенерировать");content.addView(gen);gen.setOnClickListener(v->generateImage());
         imageStatus=label("Ожидаю запрос.",12,accent);content.addView(imageStatus);
@@ -143,6 +147,7 @@ public class MainActivity extends Activity {
         if(lastImage!=null){ImageView iv=new ImageView(this);iv.setImageBitmap(lastImage);iv.setAdjustViewBounds(true);content.addView(iv);}
     }
     void generateImage(){
+        if(prefs.getBoolean("local_gan_mode",false)){generateLocalImage();return;}
         String prompt=promptInput.getText().toString().trim();if(prompt.isEmpty()){imageStatus.setText("Сначала напиши описание.");return;}
         String key=prefs.getString("api_key",""),base=prefs.getString("base","https://api.openai.com/v1"),model=prefs.getString("image_model","gpt-image-1");
         if(key.isEmpty()){imageStatus.setText("Добавь API-ключ в настройках.");return;}
@@ -159,6 +164,42 @@ public class MainActivity extends Activity {
                 android.graphics.Bitmap bmp=BitmapFactory.decodeByteArray(bytes,0,bytes.length);if(bmp==null)throw new Exception("Не удалось декодировать изображение");
                 lastImage=bmp;runOnUiThread(()->{imageStatus.setText("Готово. Изображение создано.");imagePreview.setText("Результат готов — нажми «Сохранить изображение».");show("images");});
             }catch(Exception e){runOnUiThread(()->imageStatus.setText("Ошибка генерации: "+e.getMessage()));}
+        });
+    }
+    void generateLocalImage(){
+        imageStatus.setText("Подключаюсь к Kiwi GAN в Termux…");
+        io.execute(()->{
+            HttpURLConnection c=null;
+            try{
+                URL url=new URL("http://127.0.0.1:8765/generate");
+                c=(HttpURLConnection)url.openConnection();
+                c.setRequestMethod("POST");
+                c.setConnectTimeout(5000);
+                c.setReadTimeout(120000);
+                c.setDoOutput(true);
+                c.setRequestProperty("Content-Type","application/json");
+                byte[] request="{}".getBytes("UTF-8");
+                c.setFixedLengthStreamingMode(request.length);
+                try(OutputStream out=c.getOutputStream()){out.write(request);}
+                int code=c.getResponseCode();
+                if(code<200||code>=300){
+                    InputStream err=c.getErrorStream();
+                    String detail="";
+                    if(err!=null)try(InputStream in=err;ByteArrayOutputStream b=new ByteArrayOutputStream()){byte[] buf=new byte[2048];int n;while((n=in.read(buf))>0)b.write(buf,0,n);detail=new String(b.toByteArray(),"UTF-8");}
+                    throw new Exception("Сервер вернул HTTP "+code+" "+detail);
+                }
+                byte[] bytes;
+                try(InputStream in=c.getInputStream();ByteArrayOutputStream out=new ByteArrayOutputStream()){
+                    byte[] buf=new byte[8192];int n;while((n=in.read(buf))>0)out.write(buf,0,n);bytes=out.toByteArray();
+                }
+                android.graphics.Bitmap bmp=BitmapFactory.decodeByteArray(bytes,0,bytes.length);
+                if(bmp==null)throw new Exception("Сервер вернул некорректный PNG");
+                lastImage=bmp;
+                runOnUiThread(()->{show("images");imageStatus.setText("Kiwi GAN сгенерировала изображение локально.");});
+            }catch(Exception e){
+                String msg=e.getMessage()==null?e.toString():e.getMessage();
+                runOnUiThread(()->{imageStatus.setText("Не удалось подключиться к Termux: "+msg+". Проверь, что server.py запущен.");});
+            }finally{if(c!=null)c.disconnect();}
         });
     }
     void saveImage(){
