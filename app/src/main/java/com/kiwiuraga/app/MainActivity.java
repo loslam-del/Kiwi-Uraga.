@@ -74,7 +74,7 @@ public class MainActivity extends Activity {
     void setupReader(){
         reader=new WebView(this);reader.getSettings().setJavaScriptEnabled(true);reader.getSettings().setDomStorageEnabled(true);reader.getSettings().setLoadsImagesAutomatically(false);
         reader.setWebViewClient(new WebViewClient(){
-            @Override public void onPageFinished(WebView v,String url){if(!"about:blank".equals(url)){status.setText("Страница загружена, извлекаю текст…");v.evaluateJavascript("(function(){return JSON.stringify({title:document.title||location.hostname,url:location.href,text:document.body?document.body.innerText:''});})()",r->saveExtracted(r);}}
+            @Override public void onPageFinished(WebView v,String url){if(!"about:blank".equals(url)){status.setText("Страница загружена, извлекаю текст…");v.evaluateJavascript("(function(){return JSON.stringify({title:document.title||location.hostname,url:location.href,text:document.body?document.body.innerText:''});})()",r->saveExtracted(r));}}
             @Override public void onReceivedError(WebView v,WebResourceRequest req,WebResourceError err){if(req.isForMainFrame())status.setText("Ошибка загрузки: "+err.getDescription());}
         });
     }
