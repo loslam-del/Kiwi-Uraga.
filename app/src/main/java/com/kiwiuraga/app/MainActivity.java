@@ -28,7 +28,7 @@ public class MainActivity extends Activity {
     private EditText chatInput, urlInput, promptInput;
     private EditText baseInput,keyInput,chatModelInput,imageModelInput;
     private WebView reader;
-    private android.graphics.Bitmap lastImage;
+    private android.graphics.Bitmap lastImage, mascot;
     private SharedPreferences prefs;
     private String selectedModel="";
     private int bg=Color.rgb(16,16,22), panel=Color.rgb(31,29,40), white=Color.WHITE, muted=0xffc8c3d2, accent=0xffbda5ff;
@@ -38,14 +38,28 @@ public class MainActivity extends Activity {
     Button btn(String s){Button b=new Button(this);b.setText(s);return b;}
     EditText field(String hint,String value){EditText e=new EditText(this);e.setSingleLine(true);e.setHint(hint);e.setText(value);e.setTextColor(white);e.setHintTextColor(0xff888493);return e;}
     void gap(LinearLayout box,int h){View v=new View(this);box.addView(v,new LinearLayout.LayoutParams(1,dp(h)));}
+    ImageView mascotView(int size){
+        ImageView iv=new ImageView(this);
+        try{if(mascot==null)mascot=BitmapFactory.decodeStream(getAssets().open("kiwi_avatar.jpg"));iv.setImageBitmap(mascot);}
+        catch(Exception e){iv.setImageResource(android.R.drawable.sym_def_app_icon);}
+        iv.setScaleType(ImageView.ScaleType.CENTER_CROP);
+        iv.setBackgroundColor(0xff292139);
+        iv.setClipToOutline(true);
+        iv.setContentDescription("Kiwi Araga mascot");
+        iv.setLayoutParams(new LinearLayout.LayoutParams(dp(size),dp(size)));
+        return iv;
+    }
     void card(LinearLayout parent,View child){LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.bottomMargin=dp(8);child.setBackgroundColor(panel);child.setPadding(dp(12),dp(10),dp(12),dp(10));parent.addView(child,p);}
     @Override public void onCreate(Bundle b){
         super.onCreate(b); prefs=getSharedPreferences("kiwi",MODE_PRIVATE);
         getWindow().setStatusBarColor(bg);getWindow().setNavigationBarColor(bg);
         root=new LinearLayout(this);root.setOrientation(1);root.setPadding(dp(16),dp(18),dp(16),dp(12));root.setBackgroundColor(bg);
         setContentView(root);
-        TextView title=label("🥝 Kiwi Uraga",26,white);root.addView(title);
-        TextView subtitle=label("HYBRID AI • LOCAL KNOWLEDGE • IMAGE LAB",10,accent);root.addView(subtitle);
+        LinearLayout brand=new LinearLayout(this);brand.setOrientation(0);brand.setGravity(Gravity.CENTER_VERTICAL);brand.setPadding(dp(2),dp(2),dp(2),dp(8));root.addView(brand);
+        brand.addView(mascotView(64));
+        LinearLayout brandText=new LinearLayout(this);brandText.setOrientation(1);brandText.setPadding(dp(12),0,0,0);brand.addView(brandText);
+        TextView title=label("🥝 Kiwi Uraga",26,white);brandText.addView(title);
+        TextView subtitle=label("KIWI ARAGA • HYBRID AI",10,accent);brandText.addView(subtitle);
         LinearLayout nav=new LinearLayout(this);nav.setOrientation(0);nav.setGravity(Gravity.CENTER);root.addView(nav);
         String[] names={"Чат","Фото","База","Настройки"};String[] ids={"chat","images","library","settings"};
         for(int i=0;i<names.length;i++){final String id=ids[i];Button btt=btn(names[i]);btt.setTextSize(11);nav.addView(btt,new LinearLayout.LayoutParams(0,-2,1));btt.setOnClickListener(v->show(id));}
@@ -68,7 +82,12 @@ public class MainActivity extends Activity {
         else if("library".equals(page))showLibrary();
         else showSettings();
     }
-    void heading(String s){content.addView(label(s,20,white));gap(content,8);}
+    void heading(String s){
+        LinearLayout row=new LinearLayout(this);row.setOrientation(0);row.setGravity(Gravity.CENTER_VERTICAL);row.setPadding(0,dp(4),0,dp(8));
+        row.addView(mascotView(46));
+        TextView t=label(s,20,white);t.setPadding(dp(12),0,0,0);row.addView(t);
+        content.addView(row);gap(content,4);
+    }
     void showChat(){
         heading("AI-ассистент");
         TextView hint=label("Онлайн: подключается к совместимому Chat Completions API. Офлайн: ищет ответы в твоих сохранённых материалах.",12,muted);content.addView(hint);
@@ -80,8 +99,12 @@ public class MainActivity extends Activity {
         Button clear=btn("Очистить историю");content.addView(clear);clear.setOnClickListener(v->{prefs.edit().remove("history").apply();chatBox.removeAllViews();});
     }
     void addMessage(String s,boolean persist){
+        LinearLayout row=new LinearLayout(this);row.setOrientation(0);row.setGravity(Gravity.TOP);
+        boolean fromKiwi=s.startsWith("Kiwi:");
+        if(fromKiwi){ImageView avatar=mascotView(38);LinearLayout.LayoutParams ap=new LinearLayout.LayoutParams(dp(38),dp(38));ap.rightMargin=dp(7);row.addView(avatar,ap);}
         TextView t=label(s,14,white);t.setPadding(dp(12),dp(10),dp(12),dp(10));t.setBackgroundColor(panel);
-        LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.bottomMargin=dp(6);chatBox.addView(t,p);
+        row.addView(t,new LinearLayout.LayoutParams(0,-2,1));
+        LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.bottomMargin=dp(6);chatBox.addView(row,p);
         if(persist){String h=prefs.getString("history","");h+=(h.isEmpty()?"":"\n\n")+s;if(h.length()>30000)h=h.substring(h.length()-30000);prefs.edit().putString("history",h).apply();}
     }
     void sendChat(){
