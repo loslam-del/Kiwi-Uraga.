@@ -6,6 +6,7 @@ import android.content.*;
 import android.net.Uri;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
+import android.graphics.drawable.GradientDrawable;
 import android.provider.MediaStore;
 import android.database.Cursor;
 import android.webkit.*;
@@ -31,12 +32,14 @@ public class MainActivity extends Activity {
     private android.graphics.Bitmap lastImage, mascot;
     private SharedPreferences prefs;
     private String selectedModel="";
-    private int bg=Color.rgb(16,16,22), panel=Color.rgb(31,29,40), white=Color.WHITE, muted=0xffc8c3d2, accent=0xffbda5ff;
+    private int bg=0xff100d18, panel=0xff21182d, white=0xfffff8ff, muted=0xffc8b9d7, accent=0xffff8de1;
 
     int dp(int n){return (int)(n*getResources().getDisplayMetrics().density+.5f);}
     TextView label(String s,int size,int color){TextView t=new TextView(this);t.setText(s);t.setTextSize(size);t.setTextColor(color);return t;}
-    Button btn(String s){Button b=new Button(this);b.setText(s);b.setAllCaps(false);b.setTextColor(white);b.setBackgroundTintList(android.content.res.ColorStateList.valueOf(0xff7043b8));return b;}
-    EditText field(String hint,String value){EditText e=new EditText(this);e.setSingleLine(true);e.setHint(hint);e.setText(value);e.setTextColor(white);e.setHintTextColor(0xff888493);e.setBackgroundTintList(android.content.res.ColorStateList.valueOf(accent));return e;}
+    GradientDrawable shape(int color,int radius){GradientDrawable d=new GradientDrawable();d.setColor(color);d.setCornerRadius(dp(radius));d.setStroke(dp(1),0x557f5b9e);return d;}
+    GradientDrawable gradient(int radius){GradientDrawable d=new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,new int[]{0xffa13bc0,0xff6638a5,0xff392c70});d.setCornerRadius(dp(radius));return d;}
+    Button btn(String s){Button b=new Button(this);b.setText(s);b.setAllCaps(false);b.setTextColor(white);b.setTextSize(14);b.setPadding(dp(12),dp(7),dp(12),dp(7));b.setBackground(gradient(18));return b;}
+    EditText field(String hint,String value){EditText e=new EditText(this);e.setSingleLine(true);e.setHint(hint);e.setText(value);e.setTextColor(white);e.setHintTextColor(0xffa99ab8);e.setPadding(dp(14),dp(10),dp(14),dp(10));e.setBackground(shape(0xff261c35,16));return e;}
     void gap(LinearLayout box,int h){View v=new View(this);box.addView(v,new LinearLayout.LayoutParams(1,dp(h)));}
     ImageView mascotView(int size){
         ImageView iv=new ImageView(this);
@@ -49,23 +52,23 @@ public class MainActivity extends Activity {
         iv.setLayoutParams(new LinearLayout.LayoutParams(dp(size),dp(size)));
         return iv;
     }
-    void card(LinearLayout parent,View child){LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.bottomMargin=dp(8);child.setBackgroundColor(panel);child.setPadding(dp(12),dp(10),dp(12),dp(10));parent.addView(child,p);}
+    void card(LinearLayout parent,View child){LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.bottomMargin=dp(8);child.setBackground(shape(panel,18));child.setPadding(dp(12),dp(10),dp(12),dp(10));parent.addView(child,p);}
     @Override public void onCreate(Bundle b){
         super.onCreate(b); prefs=getSharedPreferences("kiwi",MODE_PRIVATE);
         getWindow().setStatusBarColor(bg);getWindow().setNavigationBarColor(bg);
-        root=new LinearLayout(this);root.setOrientation(1);root.setPadding(dp(16),dp(18),dp(16),dp(12));root.setBackgroundColor(bg);
+        root=new LinearLayout(this);root.setOrientation(1);root.setPadding(dp(16),dp(12),dp(16),dp(10));GradientDrawable backdrop=new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,new int[]{0xff160d23,0xff100d18,0xff0d101b});root.setBackground(backdrop);
         setContentView(root);
         LinearLayout brand=new LinearLayout(this);brand.setOrientation(0);brand.setGravity(Gravity.CENTER_VERTICAL);brand.setPadding(dp(2),dp(2),dp(2),dp(8));root.addView(brand);
-        brand.addView(mascotView(64));
+        ImageView brandMascot=mascotView(88);brandMascot.setScaleType(ImageView.ScaleType.FIT_CENTER);brand.addView(brandMascot);
         LinearLayout brandText=new LinearLayout(this);brandText.setOrientation(1);brandText.setPadding(dp(12),0,0,0);brand.addView(brandText);
-        TextView title=label("🥝 Kiwi Uraga",26,white);brandText.addView(title);
-        TextView subtitle=label("KIWI ARAGA • HYBRID AI",10,accent);brandText.addView(subtitle);
-        LinearLayout nav=new LinearLayout(this);nav.setOrientation(0);nav.setGravity(Gravity.CENTER);root.addView(nav);
+        TextView title=label("Kiwi Uraga",27,white);brandText.addView(title);
+        TextView subtitle=label("✦ KIWI ARAGA • WITCH MODE ✦",10,accent);brandText.addView(subtitle);
+        LinearLayout nav=new LinearLayout(this);nav.setOrientation(0);nav.setGravity(Gravity.CENTER);nav.setPadding(dp(5),dp(5),dp(5),dp(5));nav.setBackground(shape(0xff21172e,22));LinearLayout.LayoutParams navp=new LinearLayout.LayoutParams(-1,-2);navp.bottomMargin=dp(8);root.addView(nav,navp);
         String[] names={"Чат","Фото","База","Настройки"};String[] ids={"chat","images","library","settings"};
-        for(int i=0;i<names.length;i++){final String id=ids[i];Button btt=btn(names[i]);btt.setTextSize(11);nav.addView(btt,new LinearLayout.LayoutParams(0,-2,1));btt.setOnClickListener(v->show(id));}
+        for(int i=0;i<names.length;i++){final String id=ids[i];Button btt=btn(names[i]);btt.setTextSize(11);btt.setPadding(dp(2),0,dp(2),0);nav.addView(btt,new LinearLayout.LayoutParams(0,-2,1));btt.setOnClickListener(v->show(id));}
         ScrollView sc=new ScrollView(this);sc.setFillViewport(true);root.addView(sc,new LinearLayout.LayoutParams(-1,0,1));
         content=new LinearLayout(this);content.setOrientation(1);sc.addView(content);
-        status=label("Гибридный режим. Подключи API в настройках для облачного AI.",12,accent);root.addView(status);
+        status=label("✦ Гибридный режим • готова к работе",11,accent);status.setGravity(Gravity.CENTER);status.setPadding(0,dp(7),0,0);root.addView(status);
         setupReader();show("chat");
     }
     void setupReader(){
@@ -102,7 +105,7 @@ public class MainActivity extends Activity {
         LinearLayout row=new LinearLayout(this);row.setOrientation(0);row.setGravity(Gravity.TOP);
         boolean fromKiwi=s.startsWith("Kiwi:");
         if(fromKiwi){ImageView avatar=mascotView(38);LinearLayout.LayoutParams ap=new LinearLayout.LayoutParams(dp(38),dp(38));ap.rightMargin=dp(7);row.addView(avatar,ap);}
-        TextView t=label(s,14,white);t.setPadding(dp(12),dp(10),dp(12),dp(10));t.setBackgroundColor(panel);
+        TextView t=label(s,14,white);t.setPadding(dp(12),dp(10),dp(12),dp(10));t.setBackground(shape(panel,16));
         row.addView(t,new LinearLayout.LayoutParams(0,-2,1));
         LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.bottomMargin=dp(6);chatBox.addView(row,p);
         if(persist){String h=prefs.getString("history","");h+=(h.isEmpty()?"":"\n\n")+s;if(h.length()>30000)h=h.substring(h.length()-30000);prefs.edit().putString("history",h).apply();}
@@ -128,7 +131,7 @@ public class MainActivity extends Activity {
     void showImages(){
         heading("Генератор изображений");
         content.addView(label("Генерация через подключённый Images API. Укажи модель и ключ в настройках.",12,muted));
-        promptInput=new EditText(this);promptInput.setHint("Опиши изображение…");promptInput.setTextColor(white);promptInput.setHintTextColor(0xff888493);promptInput.setBackgroundTintList(android.content.res.ColorStateList.valueOf(accent));promptInput.setMinLines(3);promptInput.setGravity(Gravity.TOP);content.addView(promptInput);
+        promptInput=new EditText(this);promptInput.setHint("Опиши изображение…");promptInput.setTextColor(white);promptInput.setHintTextColor(0xff888493);promptInput.setBackground(shape(0xff261c35,16));promptInput.setPadding(dp(14),dp(10),dp(14),dp(10));promptInput.setMinLines(3);promptInput.setGravity(Gravity.TOP);content.addView(promptInput);
         Button gen=btn("Сгенерировать");content.addView(gen);gen.setOnClickListener(v->generateImage());
         imageStatus=label("Ожидаю запрос.",12,accent);content.addView(imageStatus);
         imagePreview=label("Здесь появится результат.",12,muted);content.addView(imagePreview);
