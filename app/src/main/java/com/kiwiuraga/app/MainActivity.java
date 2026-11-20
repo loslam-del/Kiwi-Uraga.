@@ -62,7 +62,7 @@ public class MainActivity extends Activity {
         ImageView brandMascot=mascotView(88);brandMascot.setScaleType(ImageView.ScaleType.FIT_CENTER);brand.addView(brandMascot);
         LinearLayout brandText=new LinearLayout(this);brandText.setOrientation(1);brandText.setPadding(dp(12),0,0,0);brand.addView(brandText);
         TextView title=label("Kiwi Uraga",27,white);brandText.addView(title);
-        TextView subtitle=label("✦ KIWI ARAGA • WITCH MODE ✦",10,accent);brandText.addView(subtitle);
+        TextView subtitle=label("✦ KIWI ARAGA ✦",10,accent);brandText.addView(subtitle);
         LinearLayout nav=new LinearLayout(this);nav.setOrientation(0);nav.setGravity(Gravity.CENTER);nav.setPadding(dp(5),dp(5),dp(5),dp(5));nav.setBackground(shape(0xff21172e,22));LinearLayout.LayoutParams navp=new LinearLayout.LayoutParams(-1,-2);navp.bottomMargin=dp(8);root.addView(nav,navp);
         String[] names={"Чат","Фото","База","Настройки"};String[] ids={"chat","images","library","settings"};
         for(int i=0;i<names.length;i++){final String id=ids[i];Button btt=btn(names[i]);btt.setTextSize(11);btt.setPadding(dp(2),0,dp(2),0);nav.addView(btt,new LinearLayout.LayoutParams(0,-2,1));btt.setOnClickListener(v->show(id));}
