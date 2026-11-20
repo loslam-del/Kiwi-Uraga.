@@ -32,14 +32,14 @@ public class MainActivity extends Activity {
     private android.graphics.Bitmap lastImage, mascot;
     private SharedPreferences prefs;
     private String selectedModel="";
-    private int bg=0xff100d18, panel=0xff21182d, white=0xfffff8ff, muted=0xffc8b9d7, accent=0xffff8de1;
+    private int bg=0xff0b0812, panel=0xff1b1427, white=0xfffff7ff, muted=0xffb9a9c9, accent=0xffff8de1, soft=0xff30213f;
 
     int dp(int n){return (int)(n*getResources().getDisplayMetrics().density+.5f);}
     TextView label(String s,int size,int color){TextView t=new TextView(this);t.setText(s);t.setTextSize(size);t.setTextColor(color);return t;}
-    GradientDrawable shape(int color,int radius){GradientDrawable d=new GradientDrawable();d.setColor(color);d.setCornerRadius(dp(radius));d.setStroke(dp(1),0x557f5b9e);return d;}
-    GradientDrawable gradient(int radius){GradientDrawable d=new GradientDrawable(GradientDrawable.Orientation.LEFT_RIGHT,new int[]{0xffa13bc0,0xff6638a5,0xff392c70});d.setCornerRadius(dp(radius));return d;}
-    Button btn(String s){Button b=new Button(this);b.setText(s);b.setAllCaps(false);b.setTextColor(white);b.setTextSize(14);b.setPadding(dp(12),dp(7),dp(12),dp(7));b.setBackground(gradient(18));return b;}
-    EditText field(String hint,String value){EditText e=new EditText(this);e.setSingleLine(true);e.setHint(hint);e.setText(value);e.setTextColor(white);e.setHintTextColor(0xffa99ab8);e.setPadding(dp(14),dp(10),dp(14),dp(10));e.setBackground(shape(0xff261c35,16));return e;}
+    GradientDrawable shape(int color,int radius){GradientDrawable d=new GradientDrawable();d.setColor(color);d.setCornerRadius(dp(radius));d.setStroke(dp(1),0x667e548f);return d;}
+    GradientDrawable gradient(int radius){GradientDrawable d=new GradientDrawable(GradientDrawable.Orientation.TL_BR,new int[]{0xffff9be7,0xffbd65dc,0xff7146b5});d.setCornerRadius(dp(radius));return d;}
+    Button btn(String s){Button b=new Button(this);b.setText(s);b.setAllCaps(false);b.setTextColor(white);b.setTextSize(14);b.setTypeface(android.graphics.Typeface.DEFAULT,android.graphics.Typeface.BOLD);b.setPadding(dp(16),dp(10),dp(16),dp(10));b.setMinHeight(dp(48));b.setElevation(0);b.setStateListAnimator(null);b.setBackground(gradient(18));return b;}
+    EditText field(String hint,String value){EditText e=new EditText(this);e.setSingleLine(true);e.setHint(hint);e.setText(value);e.setTextColor(white);e.setHintTextColor(0xff9585a8);e.setTextSize(14);e.setPadding(dp(16),dp(13),dp(16),dp(13));e.setBackground(shape(0xff21182f,18));return e;}
     void gap(LinearLayout box,int h){View v=new View(this);box.addView(v,new LinearLayout.LayoutParams(1,dp(h)));}
     ImageView mascotView(int size){
         ImageView iv=new ImageView(this);
@@ -56,19 +56,20 @@ public class MainActivity extends Activity {
     @Override public void onCreate(Bundle b){
         super.onCreate(b); prefs=getSharedPreferences("kiwi",MODE_PRIVATE);
         getWindow().setStatusBarColor(bg);getWindow().setNavigationBarColor(bg);
-        root=new LinearLayout(this);root.setOrientation(1);root.setPadding(dp(16),dp(12),dp(16),dp(10));GradientDrawable backdrop=new GradientDrawable(GradientDrawable.Orientation.TOP_BOTTOM,new int[]{0xff160d23,0xff100d18,0xff0d101b});root.setBackground(backdrop);
+        root=new LinearLayout(this);root.setOrientation(1);root.setPadding(dp(18),dp(14),dp(18),dp(12));GradientDrawable backdrop=new GradientDrawable(GradientDrawable.Orientation.TL_BR,new int[]{0xff1b0e27,0xff0c0914,0xff100d1c});root.setBackground(backdrop);
         setContentView(root);
-        LinearLayout brand=new LinearLayout(this);brand.setOrientation(0);brand.setGravity(Gravity.CENTER_VERTICAL);brand.setPadding(dp(2),dp(2),dp(2),dp(8));root.addView(brand);
-        ImageView brandMascot=mascotView(88);brandMascot.setScaleType(ImageView.ScaleType.FIT_CENTER);brand.addView(brandMascot);
-        LinearLayout brandText=new LinearLayout(this);brandText.setOrientation(1);brandText.setPadding(dp(12),0,0,0);brand.addView(brandText);
-        TextView title=label("Kiwi Uraga",27,white);brandText.addView(title);
-        TextView subtitle=label("✦ KIWI ARAGA ✦",10,accent);brandText.addView(subtitle);
-        LinearLayout nav=new LinearLayout(this);nav.setOrientation(0);nav.setGravity(Gravity.CENTER);nav.setPadding(dp(5),dp(5),dp(5),dp(5));nav.setBackground(shape(0xff21172e,22));LinearLayout.LayoutParams navp=new LinearLayout.LayoutParams(-1,-2);navp.bottomMargin=dp(8);root.addView(nav,navp);
+        LinearLayout brand=new LinearLayout(this);brand.setOrientation(0);brand.setGravity(Gravity.CENTER_VERTICAL);brand.setPadding(dp(14),dp(12),dp(14),dp(12));brand.setBackground(shape(0xff21152f,26));LinearLayout.LayoutParams brandp=new LinearLayout.LayoutParams(-1,-2);brandp.bottomMargin=dp(14);root.addView(brand,brandp);
+        ImageView brandMascot=mascotView(112);brandMascot.setScaleType(ImageView.ScaleType.FIT_CENTER);brand.addView(brandMascot);
+        LinearLayout brandText=new LinearLayout(this);brandText.setOrientation(1);brandText.setGravity(Gravity.CENTER_VERTICAL);brandText.setPadding(dp(12),0,0,0);brand.addView(brandText,new LinearLayout.LayoutParams(0,-2,1));
+        TextView eyebrow=label("YOUR PERSONAL AI",9,accent);eyebrow.setLetterSpacing(.18f);brandText.addView(eyebrow);
+        TextView title=label("Kiwi Uraga",25,white);title.setTypeface(android.graphics.Typeface.DEFAULT,android.graphics.Typeface.BOLD);brandText.addView(title);
+        TextView subtitle=label("いつも一緒に  ✦  KIWI ARAGA",10,muted);brandText.addView(subtitle);
+        LinearLayout nav=new LinearLayout(this);nav.setOrientation(0);nav.setGravity(Gravity.CENTER);nav.setPadding(dp(5),dp(5),dp(5),dp(5));nav.setBackground(shape(0xff1a1324,22));LinearLayout.LayoutParams navp=new LinearLayout.LayoutParams(-1,-2);navp.bottomMargin=dp(8);root.addView(nav,navp);
         String[] names={"Чат","Фото","База","Настройки"};String[] ids={"chat","images","library","settings"};
-        for(int i=0;i<names.length;i++){final String id=ids[i];Button btt=btn(names[i]);btt.setTextSize(11);btt.setPadding(dp(2),0,dp(2),0);nav.addView(btt,new LinearLayout.LayoutParams(0,-2,1));btt.setOnClickListener(v->show(id));}
+        for(int i=0;i<names.length;i++){final String id=ids[i];Button btt=btn(names[i]);btt.setTextSize(11);btt.setPadding(dp(2),0,dp(2),0);btt.setMinHeight(dp(44));btt.setElevation(0);btt.setStateListAnimator(null);nav.addView(btt,new LinearLayout.LayoutParams(0,-2,1));btt.setOnClickListener(v->show(id));}
         ScrollView sc=new ScrollView(this);sc.setFillViewport(true);root.addView(sc,new LinearLayout.LayoutParams(-1,0,1));
         content=new LinearLayout(this);content.setOrientation(1);sc.addView(content);
-        status=label("✦ Гибридный режим • готова к работе",11,accent);status.setGravity(Gravity.CENTER);status.setPadding(0,dp(7),0,0);root.addView(status);
+        status=label("✦  ГОТОВА К РАБОТЕ  ✦",10,accent);status.setGravity(Gravity.CENTER);status.setPadding(0,dp(7),0,0);root.addView(status);
         setupReader();show("chat");
     }
     void setupReader(){
@@ -86,18 +87,19 @@ public class MainActivity extends Activity {
         else showSettings();
     }
     void heading(String s){
-        LinearLayout row=new LinearLayout(this);row.setOrientation(0);row.setGravity(Gravity.CENTER_VERTICAL);row.setPadding(0,dp(4),0,dp(8));
-        row.addView(mascotView(46));
-        TextView t=label(s,20,white);t.setPadding(dp(12),0,0,0);row.addView(t);
-        content.addView(row);gap(content,4);
+        LinearLayout row=new LinearLayout(this);row.setOrientation(0);row.setGravity(Gravity.CENTER_VERTICAL);row.setPadding(dp(13),dp(10),dp(13),dp(10));row.setBackground(shape(0xff21172e,20));LinearLayout.LayoutParams rp=new LinearLayout.LayoutParams(-1,-2);rp.bottomMargin=dp(13);content.addView(row,rp);
+        ImageView avatar=mascotView(54);avatar.setScaleType(ImageView.ScaleType.FIT_CENTER);row.addView(avatar);
+        LinearLayout texts=new LinearLayout(this);texts.setOrientation(1);texts.setPadding(dp(10),0,0,0);row.addView(texts);
+        TextView eyebrow=label("KIWI URAGA  /  SPACE",9,accent);eyebrow.setLetterSpacing(.14f);texts.addView(eyebrow);
+        TextView t=label(s,19,white);t.setTypeface(android.graphics.Typeface.DEFAULT,android.graphics.Typeface.BOLD);texts.addView(t);
     }
     void showChat(){
         heading("AI-ассистент");
-        TextView hint=label("Онлайн: подключается к совместимому Chat Completions API. Офлайн: ищет ответы в твоих сохранённых материалах.",12,muted);content.addView(hint);
+        TextView hint=label("Твоя личная AI-комната. Общайся с Киви, задавай вопросы и сохраняй идеи.",13,muted);hint.setPadding(dp(3),0,dp(3),dp(12));content.addView(hint);
         chatBox=new LinearLayout(this);chatBox.setOrientation(1);content.addView(chatBox);
         String history=prefs.getString("history","");
         if(!history.isEmpty())for(String line:history.split("\\n\\n"))addMessage(line,false);
-        chatInput=new EditText(this);chatInput.setHint("Напиши сообщение…");chatInput.setTextColor(white);chatInput.setHintTextColor(0xff888493);chatInput.setBackgroundTintList(android.content.res.ColorStateList.valueOf(accent));content.addView(chatInput);
+        chatInput=new EditText(this);chatInput.setHint("Напиши сообщение…");chatInput.setTextColor(white);chatInput.setHintTextColor(0xff888493);chatInput.setTextSize(15);chatInput.setPadding(dp(15),dp(13),dp(15),dp(13));chatInput.setBackground(shape(0xff21182f,18));content.addView(chatInput);
         Button send=btn("Отправить");content.addView(send);send.setOnClickListener(v->sendChat());
         Button clear=btn("Очистить историю");content.addView(clear);clear.setOnClickListener(v->{prefs.edit().remove("history").apply();chatBox.removeAllViews();});
     }
@@ -105,7 +107,7 @@ public class MainActivity extends Activity {
         LinearLayout row=new LinearLayout(this);row.setOrientation(0);row.setGravity(Gravity.TOP);
         boolean fromKiwi=s.startsWith("Kiwi:");
         if(fromKiwi){ImageView avatar=mascotView(38);LinearLayout.LayoutParams ap=new LinearLayout.LayoutParams(dp(38),dp(38));ap.rightMargin=dp(7);row.addView(avatar,ap);}
-        TextView t=label(s,14,white);t.setPadding(dp(12),dp(10),dp(12),dp(10));t.setBackground(shape(panel,16));
+        TextView t=label(s,14,white);t.setPadding(dp(14),dp(12),dp(14),dp(12));t.setBackground(shape(fromKiwi?0xff24172f:0xff191522,18));
         row.addView(t,new LinearLayout.LayoutParams(0,-2,1));
         LinearLayout.LayoutParams p=new LinearLayout.LayoutParams(-1,-2);p.bottomMargin=dp(6);chatBox.addView(row,p);
         if(persist){String h=prefs.getString("history","");h+=(h.isEmpty()?"":"\n\n")+s;if(h.length()>30000)h=h.substring(h.length()-30000);prefs.edit().putString("history",h).apply();}
@@ -130,7 +132,7 @@ public class MainActivity extends Activity {
     }
     void showImages(){
         heading("Генератор изображений");
-        content.addView(label("Генерация через подключённый Images API. Укажи модель и ключ в настройках.",12,muted));
+        TextView intro=label("Превращай идеи в изображения вместе с Киви.",13,muted);intro.setPadding(dp(3),0,dp(3),dp(12));content.addView(intro);
         promptInput=new EditText(this);promptInput.setHint("Опиши изображение…");promptInput.setTextColor(white);promptInput.setHintTextColor(0xff888493);promptInput.setBackground(shape(0xff261c35,16));promptInput.setPadding(dp(14),dp(10),dp(14),dp(10));promptInput.setMinLines(3);promptInput.setGravity(Gravity.TOP);content.addView(promptInput);
         Button gen=btn("Сгенерировать");content.addView(gen);gen.setOnClickListener(v->generateImage());
         imageStatus=label("Ожидаю запрос.",12,accent);content.addView(imageStatus);
@@ -171,7 +173,7 @@ public class MainActivity extends Activity {
     }
     void showLibrary(){
         heading("Локальная база знаний");
-        content.addView(label("Сохраняй статьи с сайтов. Материалы доступны офлайн и могут использоваться ассистентом как контекст.",12,muted));
+        TextView intro=label("Твоя библиотека знаний — статьи и заметки, которые Киви сможет использовать даже офлайн.",13,muted);intro.setPadding(dp(3),0,dp(3),dp(12));content.addView(intro);
         urlInput=field("https://example.com/article","");content.addView(urlInput);
         Button load=btn("Загрузить страницу");content.addView(load);load.setOnClickListener(v->loadSite());
         libraryBox=new LinearLayout(this);libraryBox.setOrientation(1);content.addView(libraryBox);refreshLibrary();
@@ -211,7 +213,7 @@ public class MainActivity extends Activity {
     }
     void showSettings(){
         heading("Настройки подключения");
-        content.addView(label("Совместимый OpenAI-style API. Используй адрес и ключ своего провайдера. Ключ хранится в приватных настройках приложения.",12,muted));
+        TextView intro=label("Настрой подключение и выбери модели. API-ключ хранится в приватных настройках приложения.",13,muted);intro.setPadding(dp(3),0,dp(3),dp(12));content.addView(intro);
         baseInput=field("API base URL",prefs.getString("base","https://api.openai.com/v1"));content.addView(baseInput);
         keyInput=field("API key",prefs.getString("api_key",""));keyInput.setInputType( android.text.InputType.TYPE_CLASS_TEXT|android.text.InputType.TYPE_TEXT_VARIATION_PASSWORD);content.addView(keyInput);
         chatModelInput=field("Chat model",prefs.getString("chat_model","gpt-4o-mini"));content.addView(chatModelInput);
