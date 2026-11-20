@@ -149,7 +149,7 @@ public class MainActivity extends Activity {
         urlInput=field("https://example.com/article","");content.addView(urlInput);
         Button load=btn("Загрузить страницу");content.addView(load);load.setOnClickListener(v->loadSite());
         libraryBox=new LinearLayout(this);libraryBox.setOrientation(1);content.addView(libraryBox);refreshLibrary();
-        reader.setVisibility(View.GONE);
+        reader.setVisibility(View.VISIBLE);
         content.addView(reader,new LinearLayout.LayoutParams(1,1));
     }
     void loadSite(){
